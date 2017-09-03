@@ -51,4 +51,15 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="AppToolTipLayoutStyle">
+        <item name="ttlm_padding">8dp</item>
+        <item name="ttlm_backgroundColor">@color/status_bar_blue</item>
+        <item name="ttlm_strokeWeight">2dp</item>
+        <item name="ttlm_cornerRadius">8dp</item>
+        <item name="android:textAppearance">@style/AppToolTipTextStyle</item>
+    </style>
+
+    <style name="AppToolTipTextStyle">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

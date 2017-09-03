@@ -3,6 +3,7 @@ package fr.free.nrw.commons.nearby;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,6 +37,7 @@ import fr.free.nrw.commons.location.LatLng;
 import fr.free.nrw.commons.location.LocationServiceManager;
 import fr.free.nrw.commons.theme.NavigationBaseActivity;
 import fr.free.nrw.commons.utils.UriSerializer;
+import it.sephiroth.android.library.tooltip.Tooltip;
 import timber.log.Timber;
 
 
@@ -58,6 +61,7 @@ public class NearbyActivity extends NavigationBaseActivity {
         checkLocationPermission();
         bundle = new Bundle();
         initDrawer();
+        getSupportActionBar().setSubtitle(getString(R.string.subtitle_activity_nearby));
     }
 
     @Override
@@ -296,6 +300,9 @@ public class NearbyActivity extends NavigationBaseActivity {
             if (progressBar != null) {
                 progressBar.setVisibility(View.GONE);
             }
+
+            //all UI has been loaded, now show Nearby explanation tooltip
+            showNearbyPlacesExplanationTooltip();
         }
     }
 
@@ -319,6 +326,31 @@ public class NearbyActivity extends NavigationBaseActivity {
         fragment.setArguments(bundle);
         fragmentTransaction.replace(R.id.container, fragment);
         fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    private void showNearbyPlacesExplanationTooltip() {
+        SharedPreferences preferences = getSharedPreferences("fr.free.nrw.commons", MODE_PRIVATE);
+        if (!preferences.getBoolean("nearbyExplanationTooltipShown",false)) {
+            //user has not seen nearby explanation tooltip, so show it to them now
+            Tooltip.make(this, new Tooltip.Builder(101)
+                    .anchor(getToolbar(), Tooltip.Gravity.BOTTOM)
+                    .closePolicy(
+                            new Tooltip.ClosePolicy()
+                                    //tooltip will be dismissed if tapped on
+                                    .insidePolicy(true,false)
+                                    .outsidePolicy(false,false),
+                            8000 //will be shown for 8 seconds before it goes away
+                    )
+                    .showDelay(500)
+                    .text(getString(R.string.tooltip_nearby_places_explanation))
+                    .withStyleId(R.style.AppToolTipLayoutStyle)
+                    .withArrow(true)
+                    .floatingAnimation(Tooltip.AnimationBuilder.DEFAULT)
+                    .build()
+            ).show();
+
+            preferences.edit().putBoolean("nearbyExplanationTooltipShown",true).apply();
+        }
     }
 
     public static void startYourself(Context context) {

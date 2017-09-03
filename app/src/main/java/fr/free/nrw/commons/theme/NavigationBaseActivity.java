@@ -136,4 +136,9 @@ public class NavigationBaseActivity extends BaseActivity
                 return false;
         }
     }
+
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
 }
